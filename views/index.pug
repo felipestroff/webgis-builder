@@ -2,6 +2,22 @@ extends layout
 
 block content
 
-    div.alert.alert-primary Nenhum App criado, deseja criar um novo?
+    if apps.length
+
+        div.row.row-cols-1.row-cols-md-3.g-4.mb-4
+            each app in apps
+                div.col
+                    div.card.h-100
+                        img(src='').card-img-top
+                        div.card-body
+                            h5.card-title #{app}
+                            p.card-text
+                            a(href=`/apps/${app}`).btn.btn-link Acessar
+                            a(href='/export-app?name=' + app).btn.btn-link Exportar
+                            a(href='/delete-app?name=' + app).btn.btn-link Excluir
+                        div.card-footer
+                            small.text-muted Última atualização em 5 minutos atrás
+    else
+        div.alert.alert-primary Nenhum App criado, deseja criar um novo?
 
     a(href='/new-app').btn.btn-primary Novo App
