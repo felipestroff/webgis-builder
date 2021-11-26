@@ -8,7 +8,7 @@ const zipper = require('zip-local');
 router.get('/', (req, res) => {
     getApps().then(apps => {
         console.log(apps);
-
+        
         res.render('index', {
             title: 'WebGIS Builder',
             apps: apps
@@ -21,8 +21,6 @@ router.route('/new-app')
         res.render('new-app', { title: 'WebGIS Builder - Novo App' });
     })
     .post((req, res) => {
-        console.log(req.body)
-    
         const outputDir = path.resolve('./') + `/apps/${req.body.route}`;
         const outputFile = outputDir + '/index.html';
         const pugFile = path.resolve('./') + '/views/webgis/index.pug';
@@ -37,11 +35,19 @@ router.route('/new-app')
                     console.error(err);
                 }
                 else {
-                    console.log(`${pugFile} done > ${outputFile}`);
-    
-                    getApps().then(apps => {
-                        console.log(apps);
-                
+                    const date = new Date();
+                    const createdDate = ((date.getDate() )) + '/' + ((date.getMonth() + 1)) + '/' + date.getFullYear(); 
+
+                    const app = {
+                        name: req.body.name,
+                        route: req.body.route,
+                        date: createdDate
+                    };
+
+                    writeAppConfigFile(outputDir, JSON.stringify(app, null, 4)).then(function () {
+                        return getApps();
+                    })
+                    .then(apps => {
                         res.render('index', {
                             title: 'WebGIS Builder',
                             apps: apps
@@ -97,16 +103,47 @@ router.get('/delete-app', (req, res) => {
     });
 });
 
-const getApps = async function () {
+const getApps = async () => {
     const appsDir = path.resolve('./') + '/apps'
 
-    return fs.readdirSync(appsDir, function (err, files) {
+    const apps = fs.readdirSync(appsDir, (err, files) => {
         if (err) {
             console.error(err)
         }
+
+        return files;
     })
-    .filter(file => {
-        return fs.lstatSync(appsDir + '/' + file).isDirectory();
+    .map((file) => {
+        const isDir = fs.lstatSync(appsDir + '/' + file).isDirectory();
+
+        if (isDir) {
+            outputDir = path.resolve('./') + `/apps/${file}`;
+
+            return readAppConfigFile(outputDir);
+        }
+    });
+
+    return Promise.all(apps).then(data => {
+        const apps = data.filter(app => app);
+        return apps.map(app => {
+            return JSON.parse(app);
+        });
+    })
+}
+
+const writeAppConfigFile = async (outputDir, data) => {
+    return fs.writeFileSync(outputDir + '/config.json', data, (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
+const readAppConfigFile = async (outputDir) => {
+    return fs.readFileSync(outputDir + '/config.json', { encoding: 'utf8' }, (err) => {
+        if (err) {
+            console.error(err);
+        }
     });
 }
 

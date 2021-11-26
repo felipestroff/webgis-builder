@@ -7,17 +7,17 @@ block content
             h5.alert-heading= error
             p= msg
 
-    form(action='/new-app' method="POST")
+    form(action='/new-app' method='POST')
         fieldset
             legend Preencha todos os campos
 
             div.mb-3
                 label(for='name').form-label Nome
-                input(type='text' id='name' name="name" required).form-control
+                input(type='text' id='name' name='name' required).form-control
 
             div.mb-3
                 label(for='route').form-label Rota
-                input(type='text' id='route' name="route" required).form-control
+                input(type='text' id='route' name='route' required).form-control
 
         a(href='/').btn.btn-default Voltar
         button(type='submit').btn.btn-primary Criar App

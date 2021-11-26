@@ -10,13 +10,13 @@ block content
                     div.card.h-100
                         img(src='').card-img-top
                         div.card-body
-                            h5.card-title #{app}
+                            h5.card-title #{app.name}
                             p.card-text
-                            a(href=`/apps/${app}`).btn.btn-link Acessar
-                            a(href='/export-app?name=' + app).btn.btn-link Exportar
-                            a(href='/delete-app?name=' + app).btn.btn-link Excluir
+                            a(href=`/apps/${app.route}`).btn.btn-link Acessar
+                            a(href='/export-app?name=' + app.route).btn.btn-link Exportar
+                            a(href='/delete-app?name=' + app.route).btn.btn-link Excluir
                         div.card-footer
-                            small.text-muted Última atualização em 5 minutos atrás
+                            small.text-muted Criado em #{app.date}
     else
         div.alert.alert-primary Nenhum App criado, deseja criar um novo?
 
